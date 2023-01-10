@@ -41,7 +41,7 @@ internal class DebugMenuActivity : AppCompatActivity() {
 
     fun goToNetworkDetail(netCall: NetCall) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.kntrl_container, NetworkDetailFragment.create(netCall.id))
+            .replace(R.id.kntrl_container, NetworkDetailFragment.create(netCall.id, netCall.timestamp))
             .addToBackStack("NetworkDetailFragment")
             .commit()
     }

@@ -29,5 +29,9 @@ SELECT * FROM netCall;
 selectCallById:
 SELECT * FROM netCall WHERE request_id = :requestId;
 
+
+selectCallByTimestamp:
+SELECT * FROM netCall WHERE timestamp = :timestamp;
+
 selectLastRequestId:
 SELECT request_id FROM netCall ORDER BY request_id DESC LIMIT 1;

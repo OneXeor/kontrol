@@ -16,13 +16,15 @@ internal class DBRepository(private val database: AppDatabase) {
                 else database.requestQueries.selectRequest(it.request).executeAsOneOrNull()
 
                 val requestError = if (request?.error == null) null
-                else database.requestErrorQueries.selectRequestError(request.error).executeAsOneOrNull()
+                else database.requestErrorQueries.selectRequestError(request.error)
+                    .executeAsOneOrNull()
 
                 val response = if (it.response == null) null
                 else database.responseQueries.selectResponse(it.response).executeAsOneOrNull()
 
                 val responseError = if (response?.error == null) null
-                else database.responseErrorQueries.selectResponseError(response.error).executeAsOneOrNull()
+                else database.responseErrorQueries.selectResponseError(response.error)
+                    .executeAsOneOrNull()
 
                 val parsedRequest = if (request != null) Request(
                     request.timestamp,
@@ -30,7 +32,10 @@ internal class DBRepository(private val database: AppDatabase) {
                     request.method,
                     request.headers.parseToStringMap(),
                     RequestBody(request.charset, request.contentType, request.body),
-                    if (requestError != null) NetCallError(requestError.message, requestError.trace) else null
+                    if (requestError != null) NetCallError(
+                        requestError.message,
+                        requestError.trace
+                    ) else null
                 ) else null
 
                 val parsedResponse = if (response != null) Response(
@@ -39,7 +44,10 @@ internal class DBRepository(private val database: AppDatabase) {
                     response.method,
                     response.headers.parseToStringMap(),
                     ResponseBody(response.charset, response.contentType, response.body),
-                    if (responseError != null) NetCallError(responseError.message, responseError.trace) else null
+                    if (responseError != null) NetCallError(
+                        responseError.message,
+                        responseError.trace
+                    ) else null
                 ) else null
 
                 NetCall(it.request_id, it.timestamp, parsedRequest, parsedResponse)
@@ -49,7 +57,8 @@ internal class DBRepository(private val database: AppDatabase) {
 
     suspend fun getCallById(id: Long): NetCall {
         return withContext(Dispatchers.Default) {
-            val call = database.netCallQueries.selectCallById(id).executeAsOne()
+            val calls = database.netCallQueries.selectCallById(id).executeAsList()
+            val call = calls.first()
 
             val request = if (call.request == null) null
             else database.requestQueries.selectRequest(call.request).executeAsOneOrNull()
@@ -61,7 +70,8 @@ internal class DBRepository(private val database: AppDatabase) {
             else database.responseQueries.selectResponse(call.response).executeAsOneOrNull()
 
             val responseError = if (response?.error == null) null
-            else database.responseErrorQueries.selectResponseError(response.error).executeAsOneOrNull()
+            else database.responseErrorQueries.selectResponseError(response.error)
+                .executeAsOneOrNull()
 
             val parsedRequest = if (request != null) Request(
                 request.timestamp,
@@ -69,7 +79,10 @@ internal class DBRepository(private val database: AppDatabase) {
                 request.method,
                 request.headers.parseToStringMap(),
                 RequestBody(request.charset, request.contentType, request.body),
-                if (requestError != null) NetCallError(requestError.message, requestError.trace) else null
+                if (requestError != null) NetCallError(
+                    requestError.message,
+                    requestError.trace
+                ) else null
             ) else null
 
             val parsedResponse = if (response != null) Response(
@@ -78,10 +91,69 @@ internal class DBRepository(private val database: AppDatabase) {
                 response.method,
                 response.headers.parseToStringMap(),
                 ResponseBody(response.charset, response.contentType, response.body),
-                if (responseError != null) NetCallError(responseError.message, responseError.trace) else null
+                if (responseError != null) NetCallError(
+                    responseError.message,
+                    responseError.trace
+                ) else null
             ) else null
 
-            return@withContext NetCall(call.request_id, call.timestamp, parsedRequest, parsedResponse)
+            return@withContext NetCall(
+                call.request_id,
+                call.timestamp,
+                parsedRequest,
+                parsedResponse
+            )
+
+        }
+    }
+
+    suspend fun getCallByTimestamp(timestamp: Long): NetCall {
+        return withContext(Dispatchers.Default) {
+            val call = database.netCallQueries.selectCallByTimestamp(timestamp).executeAsOne()
+
+            val request = if (call.request == null) null
+            else database.requestQueries.selectRequest(call.request).executeAsOneOrNull()
+
+            val requestError = if (request?.error == null) null
+            else database.requestErrorQueries.selectRequestError(request.error).executeAsOneOrNull()
+
+            val response = if (call.response == null) null
+            else database.responseQueries.selectResponse(call.response).executeAsOneOrNull()
+
+            val responseError = if (response?.error == null) null
+            else database.responseErrorQueries.selectResponseError(response.error)
+                .executeAsOneOrNull()
+
+            val parsedRequest = if (request != null) Request(
+                request.timestamp,
+                request.url,
+                request.method,
+                request.headers.parseToStringMap(),
+                RequestBody(request.charset, request.contentType, request.body),
+                if (requestError != null) NetCallError(
+                    requestError.message,
+                    requestError.trace
+                ) else null
+            ) else null
+
+            val parsedResponse = if (response != null) Response(
+                response.status,
+                response.url,
+                response.method,
+                response.headers.parseToStringMap(),
+                ResponseBody(response.charset, response.contentType, response.body),
+                if (responseError != null) NetCallError(
+                    responseError.message,
+                    responseError.trace
+                ) else null
+            ) else null
+
+            return@withContext NetCall(
+                call.request_id,
+                call.timestamp,
+                parsedRequest,
+                parsedResponse
+            )
 
         }
     }
@@ -130,9 +202,15 @@ internal class DBRepository(private val database: AppDatabase) {
 
                 val netCallError = requestData.error?.toError()
                 if (netCallError != null) {
-                    requestErrorQueries.insertRequestError(call.requestID, netCallError.message, netCallError.trace)
-                    val requestErrorId = requestErrorQueries.selectIdByRequestId(call.requestID).executeAsOne()
-                    val requestId = requestQueries.selectIdByRequestId(call.requestID).executeAsOne()
+                    requestErrorQueries.insertRequestError(
+                        call.requestID,
+                        netCallError.message,
+                        netCallError.trace
+                    )
+                    val requestErrorId =
+                        requestErrorQueries.selectIdByRequestId(call.requestID).executeAsOne()
+                    val requestId =
+                        requestQueries.selectIdByRequestId(call.requestID).executeAsOne()
                     requestQueries.updateRequest(requestErrorId, requestId)
                 }
             }
@@ -167,9 +245,15 @@ internal class DBRepository(private val database: AppDatabase) {
 
                 val netCallError = responseData.error?.toError()
                 if (netCallError != null) {
-                    responseErrorQueries.insertRequestError(call.requestID, netCallError.message, netCallError.trace)
-                    val responseErrorId = responseErrorQueries.selectIdByRequestId(call.requestID).executeAsOne()
-                    val responseId = responseQueries.selectIdByRequestId(call.requestID).executeAsOne()
+                    responseErrorQueries.insertRequestError(
+                        call.requestID,
+                        netCallError.message,
+                        netCallError.trace
+                    )
+                    val responseErrorId =
+                        responseErrorQueries.selectIdByRequestId(call.requestID).executeAsOne()
+                    val responseId =
+                        responseQueries.selectIdByRequestId(call.requestID).executeAsOne()
                     responseQueries.updateResponse(responseErrorId, responseId)
                 }
 
@@ -252,9 +336,15 @@ internal class DBRepository(private val database: AppDatabase) {
 
                 val netCallError = responseData.error?.toError()
                 if (netCallError != null) {
-                    responseErrorQueries.insertRequestError(call.requestID, netCallError.message, netCallError.trace)
-                    val responseErrorId = responseErrorQueries.selectIdByRequestId(call.requestID).executeAsOne()
-                    val responseId = responseQueries.selectIdByRequestId(call.requestID).executeAsOne()
+                    responseErrorQueries.insertRequestError(
+                        call.requestID,
+                        netCallError.message,
+                        netCallError.trace
+                    )
+                    val responseErrorId =
+                        responseErrorQueries.selectIdByRequestId(call.requestID).executeAsOne()
+                    val responseId =
+                        responseQueries.selectIdByRequestId(call.requestID).executeAsOne()
                     responseQueries.updateResponse(responseErrorId, responseId)
                 }
 
@@ -278,6 +368,11 @@ internal suspend fun getCallsList(): List<NetCall> {
 internal suspend fun getCallById(id: Long): NetCall {
     val repository = requireNotNull(ServiceLocator.DBRepository.value)
     return repository.getCallById(id)
+}
+
+internal suspend fun getCallByTimestamp(timestamp: Long): NetCall {
+    val repository = requireNotNull(ServiceLocator.DBRepository.value)
+    return repository.getCallByTimestamp(timestamp)
 }
 
 fun String.parseToStringMap(): Map<String, String> {
