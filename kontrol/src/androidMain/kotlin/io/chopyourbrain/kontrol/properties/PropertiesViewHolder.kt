@@ -100,7 +100,9 @@ internal class TextFieldViewHolder(
 ) : PropertyViewHolder(binding.root) {
     override fun bind(property: Property) {
         val textDebugProperty = property as? TextFieldProperty
+        println("TextFieldViewHolder.bind")
         if (textDebugProperty != null) {
+            println("TextFieldViewHolder.bind property")
             with(binding) {
                 kntrlDescription.text = textDebugProperty.description
                 kntrlValue.setText(textDebugProperty.currentValue.value)

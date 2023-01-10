@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 33
     defaultConfig {
         applicationId = "io.chopyourbrain.kontrol.android"
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
     }

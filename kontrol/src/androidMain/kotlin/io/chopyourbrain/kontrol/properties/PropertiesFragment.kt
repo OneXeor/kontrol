@@ -125,6 +125,6 @@ internal class PropertiesFragment : Fragment() {
         DropDown(2),
         Button(3),
         Text(4),
-        TextField(4)
+        TextField(5)
     }
 }
