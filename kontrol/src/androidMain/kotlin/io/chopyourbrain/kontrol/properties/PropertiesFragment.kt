@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.ListAdapter
 import io.chopyourbrain.kontrol.R
 import io.chopyourbrain.kontrol.ServiceLocator
 import io.chopyourbrain.kontrol.databinding.*
-import io.chopyourbrain.kontrol.properties.*
 
 internal class PropertiesFragment : Fragment() {
     private val diff = object : DiffUtil.ItemCallback<Property>() {
@@ -46,6 +45,10 @@ internal class PropertiesFragment : Fragment() {
                     val itemBinding = KntrlItemTextPropertyBinding.inflate(LayoutInflater.from(parent.context))
                     TextViewHolder(itemBinding)
                 }
+                PropertiesViewHolderType.TextField.value -> {
+                    val itemBinding = KntrlItemTextFieldPropertyBinding.inflate(LayoutInflater.from(parent.context))
+                    TextFieldViewHolder(itemBinding)
+                }
                 else -> throw NotImplementedError()
             }
         }
@@ -61,6 +64,7 @@ internal class PropertiesFragment : Fragment() {
                 is DropDownProperty -> PropertiesViewHolderType.DropDown.value
                 is ButtonProperty -> PropertiesViewHolderType.Button.value
                 is TextProperty -> PropertiesViewHolderType.Text.value
+                is TextFieldProperty -> PropertiesViewHolderType.TextField.value
                 else -> -1
             }
         }
@@ -104,6 +108,7 @@ internal class PropertiesFragment : Fragment() {
                 startActivity(shareIntent)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -115,6 +120,11 @@ internal class PropertiesFragment : Fragment() {
     }
 
     private enum class PropertiesViewHolderType(val value: Int) {
-        Title(0), Switcher(1), DropDown(2), Button(3), Text(4)
+        Title(0),
+        Switcher(1),
+        DropDown(2),
+        Button(3),
+        Text(4),
+        TextField(5)
     }
 }

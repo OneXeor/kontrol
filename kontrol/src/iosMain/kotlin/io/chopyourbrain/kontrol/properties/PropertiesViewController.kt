@@ -38,6 +38,7 @@ internal class PropertiesViewController @ObjCObjectBase.OverrideInit constructor
             registerClass(cellClass = SwitcherCell, forCellReuseIdentifier = "switcher_cell")
             registerClass(cellClass = TitleCell, forCellReuseIdentifier = "title_cell")
             registerClass(cellClass = TextCell, forCellReuseIdentifier = "text_cell")
+            registerClass(cellClass = TextFieldCell, forCellReuseIdentifier = "text_field_cell")
             registerClass(cellClass = ButtonCell, forCellReuseIdentifier = "button_cell")
             registerClass(cellClass = PickerCell, forCellReuseIdentifier = "picker_cell")
         }
@@ -91,6 +92,19 @@ internal class PropertiesDataSource : NSObject(), UITableViewDataSourceProtocol 
                     selectionStyle = UITableViewCellSelectionStyle.UITableViewCellSelectionStyleNone
                     title.text = item.description
                     value.text = item.value
+                }
+                return cell
+            }
+            return UITableViewCell()
+        }
+        if (item is TextFieldProperty) {
+            val cell = tableView.dequeueReusableCellWithIdentifier("text_field_cell", cellForRowAtIndexPath) as? TextFieldCell
+            if (cell != null) {
+                cell.apply {
+                    selectionStyle = UITableViewCellSelectionStyle.UITableViewCellSelectionStyleNone
+                    title.text = item.description
+                    value.text = item.currentValue.value
+                    textFieldProperty = item
                 }
                 return cell
             }

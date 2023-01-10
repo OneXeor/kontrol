@@ -91,6 +91,9 @@ Create your properties by DSL:
 ```kotlin
 val properties = properties {
     group("Network") {
+        textField("baseUrl", "Enter server host") {
+            //Text changed listener
+        }
         switcher("Enable log", true) {
             //Check listener
         }
