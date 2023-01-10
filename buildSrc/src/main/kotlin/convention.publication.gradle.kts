@@ -36,8 +36,8 @@ fun getExtraString(name: String) = ext[name]?.toString()
 publishing {
     repositories {
         maven {
-            name = "sonatype"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            name = "kontrol"
+            setUrl("https://maven.pkg.github.com/OneXeor/kontrol")
             credentials {
                 username = getExtraString("ossrhUsername")
                 password = getExtraString("ossrhPassword")
@@ -52,7 +52,7 @@ publishing {
         pom {
             name.set("kontrol")
             description.set("Debug menu library for Kotlin Multiplatform Mobile")
-            url.set("https://github.com/chopyourbrain/kontrol")
+            url.set("https://github.com/OneXeor/kontrol")
 
             licenses {
                 license {
@@ -68,7 +68,7 @@ publishing {
                 }
             }
             scm {
-                url.set("https://github.com/chopyourbrain/kontrol")
+                url.set("https://github.com/OneXeor/kontrol")
             }
 
         }
