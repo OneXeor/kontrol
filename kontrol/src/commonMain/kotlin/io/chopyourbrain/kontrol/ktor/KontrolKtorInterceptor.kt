@@ -89,12 +89,14 @@ class KontrolKtorInterceptor(val level: DetailLevel) {
             entry.headers = joinHeaders(pipeline.context.response.headers.entries())
         }
 
-        consumer.saveResponse(id, entry)
         runCatching {
             pipeline.proceed()
         }.onFailure {
-            consumer.saveResponse(id, it)
+            entry.error = it
+            consumer.saveResponse(id, entry)
             throw it
+        }.onSuccess {
+            consumer.saveResponse(id, entry)
         }
     }
 
