@@ -14,21 +14,54 @@ fun properties(init: Props.() -> Unit): List<Property> = Props().apply(init).get
 open class DSL : PropertyDSL() {
     protected val props = mutableListOf<Property>()
 
-    fun switcher(description: String, isEnabled: Boolean = false, onCheckedChangeListener: OnCheckedChangeListener? = null) {
+    fun switcher(
+        description: String,
+        isEnabled: Boolean = false,
+        onCheckedChangeListener: OnCheckedChangeListener? = null
+    ) {
         props.add(SwitcherProperty(description, atomic(isEnabled), onCheckedChangeListener))
     }
 
-    fun switcher(key: String, description: String, onCheckedChangeListener: OnCheckedChangeListener? = null) {
+    fun switcher(
+        key: String,
+        description: String,
+        onCheckedChangeListener: OnCheckedChangeListener? = null
+    ) {
         val kvStorage = ServiceLocator.KVStorage.value
         val cachedListener = OnCheckedChangeListener {
             kvStorage?.setBoolean(key, it)
             onCheckedChangeListener?.invoke(it)
         }
-        props.add(SwitcherProperty(description, atomic(kvStorage?.getBoolean(key) ?: false), cachedListener))
+        props.add(
+            SwitcherProperty(
+                description,
+                atomic(kvStorage?.getBoolean(key) ?: false),
+                cachedListener
+            )
+        )
     }
 
     fun text(description: String, value: String) {
         props.add(TextProperty(description, value))
+    }
+
+    fun textField(
+        key: String,
+        description: String,
+        afterTextChangedListener: OnAfterTextChangedListener? = null
+    ) {
+        val kvStorage = ServiceLocator.KVStorage.value
+        val cachedListener = OnAfterTextChangedListener {
+            kvStorage?.setString(key, it)
+            afterTextChangedListener?.invoke(it)
+        }
+        props.add(
+            TextFieldProperty(
+                description,
+                atomic(kvStorage?.getString(key).orEmpty()),
+                cachedListener
+            )
+        )
     }
 
     fun dropDown(
@@ -37,7 +70,14 @@ open class DSL : PropertyDSL() {
         currentValue: String,
         onDropDownStateChanged: OnDropDownStateChangedListener? = null
     ) {
-        props.add(DropDownProperty(description, valueList, atomic(currentValue), onDropDownStateChanged))
+        props.add(
+            DropDownProperty(
+                description,
+                valueList,
+                atomic(currentValue),
+                onDropDownStateChanged
+            )
+        )
     }
 
     fun dropDown(
@@ -53,7 +93,9 @@ open class DSL : PropertyDSL() {
         }
         props.add(
             DropDownProperty(
-                description, valueList, atomic(kvStorage?.getString(key) ?: valueList.firstOrNull() ?: ""),
+                description,
+                valueList,
+                atomic(kvStorage?.getString(key) ?: valueList.firstOrNull() ?: ""),
                 cachedListener
             )
         )

@@ -80,6 +80,29 @@ class TextProperty(
     }
 }
 
+class TextFieldProperty(
+    val description: String,
+    val currentValue: AtomicRef<String>,
+    val listener: OnAfterTextChangedListener?
+) : Property() {
+
+    val onTextChangedListener = OnAfterTextChangedListener {
+        currentValue.value = it
+        listener?.invoke(it)
+    }
+
+    override fun toString(): String {
+        return StringBuilder()
+            .append(description)
+            .appendLine()
+            .toString()
+    }
+}
+
+fun interface OnAfterTextChangedListener {
+    fun invoke(value: String)
+}
+
 class TitleProperty(
     val title: String
 ) : Property() {

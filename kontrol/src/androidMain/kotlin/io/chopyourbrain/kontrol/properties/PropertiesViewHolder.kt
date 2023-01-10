@@ -3,6 +3,7 @@ package io.chopyourbrain.kontrol.properties
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import io.chopyourbrain.kontrol.databinding.*
 
@@ -90,6 +91,23 @@ internal class TextViewHolder(
         if (textDebugProperty != null) {
             binding.kntrlDescription.text = textDebugProperty.description
             binding.kntrlValue.text = textDebugProperty.value
+        }
+    }
+}
+
+internal class TextFieldViewHolder(
+    private val binding: KntrlItemTextFieldPropertyBinding
+) : PropertyViewHolder(binding.root) {
+    override fun bind(property: Property) {
+        val textDebugProperty = property as? TextFieldProperty
+        if (textDebugProperty != null) {
+            with(binding) {
+                kntrlDescription.text = textDebugProperty.description
+                kntrlValue.setText(textDebugProperty.currentValue.value)
+                kntrlValue.doAfterTextChanged {
+                    textDebugProperty.onTextChangedListener.invoke(it.toString())
+                }
+            }
         }
     }
 }

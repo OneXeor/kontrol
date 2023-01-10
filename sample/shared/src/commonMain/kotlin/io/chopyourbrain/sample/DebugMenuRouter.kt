@@ -22,6 +22,9 @@ object DebugMenuRouter {
             }
             val properties = properties {
                 group("Network") {
+                    textField("baseUrl", "Enter server host") {
+                        Napier.v("Server host is $it")
+                    }
                     switcher("Enable log", true) {
                         Napier.v("Enable log is $it")
                     }
