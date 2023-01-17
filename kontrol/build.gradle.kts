@@ -5,7 +5,7 @@ plugins {
     id("convention.publication")
 }
 
-version = "0.2.2"
+version = "0.2.3"
 group = "io.github.chopyourbrain"
 
 kotlin {

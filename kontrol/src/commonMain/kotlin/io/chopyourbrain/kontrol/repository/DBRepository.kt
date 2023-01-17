@@ -185,7 +185,7 @@ internal class DBRepository(private val database: AppDatabase) {
                     RequestBody(
                         requestData.body.charset.toString(),
                         requestData.body.contentType,
-                        requestData.body.bodyChannel?.tryReadText(requestData.body.charset)
+                        requestData.body.bodyChannel?.decodeToString()
                     )
                 )
 

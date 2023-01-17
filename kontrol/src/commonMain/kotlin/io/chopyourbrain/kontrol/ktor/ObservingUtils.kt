@@ -7,29 +7,21 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 
-suspend fun OutgoingContent.observe(log: ByteWriteChannel): OutgoingContent = when (this) {
-    is OutgoingContent.ByteArrayContent -> {
-        log.writeFully(bytes())
-        log.close()
-        this
-    }
+suspend fun OutgoingContent.observe(): OutgoingContent = when (this) {
     is OutgoingContent.ReadChannelContent -> {
         val responseChannel = ByteChannel()
         val content = readFrom()
 
-        content.copyToBoth(log, responseChannel)
+        content.copyTo(responseChannel)
         LoggedContent(this, responseChannel)
     }
     is OutgoingContent.WriteChannelContent -> {
         val responseChannel = ByteChannel()
         val content = toReadChannel()
-        content.copyToBoth(log, responseChannel)
+        content.copyTo(responseChannel)
         LoggedContent(this, responseChannel)
     }
-    else -> {
-        log.close()
-        this
-    }
+    else -> this
 }
 
 private class LoggedContent(
@@ -48,6 +40,6 @@ private class LoggedContent(
     override fun readFrom(): ByteReadChannel = channel
 }
 
-private fun OutgoingContent.WriteChannelContent.toReadChannel(): ByteReadChannel = GlobalScope.writer(Dispatchers.Unconfined) {
+internal fun OutgoingContent.WriteChannelContent.toReadChannel(): ByteReadChannel = GlobalScope.writer(Dispatchers.Unconfined) {
     writeTo(channel)
 }.channel

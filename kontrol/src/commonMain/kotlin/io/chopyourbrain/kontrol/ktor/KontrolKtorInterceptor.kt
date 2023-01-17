@@ -54,13 +54,17 @@ class KontrolKtorInterceptor(val level: DetailLevel) {
         val observedContent = if (level.body) {
             val charset = content?.contentType?.charset() ?: Charsets.UTF_8
             val contentType = content?.contentType?.toString()
-            val bodyChannel = ByteChannel()
 
             entryBody.charset = charset
             entryBody.contentType = contentType
-            entryBody.bodyChannel = bodyChannel
+            entryBody.bodyChannel = when(content) {
+                is OutgoingContent.ByteArrayContent -> content.bytes()
+                is OutgoingContent.WriteChannelContent -> content.toReadChannel().toByteArray()
+                is OutgoingContent.ReadChannelContent -> content.readFrom().toByteArray()
+                else -> null
+            }
 
-            content?.observe(bodyChannel)
+            content?.observe()
         } else null
 
         runCatching {
