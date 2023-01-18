@@ -4,6 +4,7 @@ import io.chopyourbrain.kontrol.ServiceLocator
 import io.chopyourbrain.kontrol.database.AppDatabase
 import io.chopyourbrain.kontrol.ktor.*
 import io.chopyourbrain.kontrol.okhttp.OkhttpNetCallEntry
+import io.ktor.utils.io.charsets.Charsets
 import kotlinx.coroutines.*
 
 internal class DBRepository(private val database: AppDatabase) {
@@ -185,7 +186,7 @@ internal class DBRepository(private val database: AppDatabase) {
                     RequestBody(
                         requestData.body.charset.toString(),
                         requestData.body.contentType,
-                        requestData.body.bodyChannel?.decodeToString()
+                        requestData.body.bodyChannel?.take(16384)?.toByteArray()?.decodeToString()
                     )
                 )
 
