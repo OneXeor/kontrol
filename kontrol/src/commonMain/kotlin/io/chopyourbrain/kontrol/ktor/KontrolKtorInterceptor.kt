@@ -25,7 +25,6 @@ import io.ktor.util.date.getTimeMillis
 import io.ktor.util.pipeline.PipelineContext
 import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.charsets.Charsets
-import io.ktor.utils.io.core.toByteArray
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -51,7 +50,8 @@ class KontrolKtorInterceptor(val level: DetailLevel) {
 
             val requestHeaders = joinHeaders(pipeline.context.headers.entries())
 
-            val lengthHeader = content?.contentLength?.let { HttpHeaders.ContentLength to it.toString() }
+            val lengthHeader =
+                content?.contentLength?.let { HttpHeaders.ContentLength to it.toString() }
             val typeHeader = content?.contentType?.let { HttpHeaders.ContentType to it.toString() }
 
             val contentHeaders = content?.headers?.entries()?.let { joinHeaders(it) }
@@ -69,10 +69,11 @@ class KontrolKtorInterceptor(val level: DetailLevel) {
             val charset = content?.contentType?.charset() ?: Charsets.UTF_8
             val contentType = content?.contentType?.toString()
 
+            entryBody.charset = charset
+            entryBody.contentType = contentType
+
             GlobalScope.launch(Dispatchers.Unconfined) {
-                entryBody.charset = charset
-                entryBody.contentType = contentType
-                entryBody.bodyChannel = channel.tryReadText(charset)?.toByteArray()
+                entryBody.bodyChannel = (channel.tryReadText(charset) ?: "[request body omitted]")
             }
 
             content?.observe(channel)

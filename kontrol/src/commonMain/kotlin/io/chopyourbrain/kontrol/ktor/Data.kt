@@ -24,7 +24,7 @@ class RequestEntry(
 ) : Entry
 
 class RequestBodyEntry(
-    var bodyChannel: ByteArray? = null,
+    var bodyChannel: String? = null,
     var contentType: String? = null,
     var charset: Charset = Charsets.UTF_8
 ) : Entry

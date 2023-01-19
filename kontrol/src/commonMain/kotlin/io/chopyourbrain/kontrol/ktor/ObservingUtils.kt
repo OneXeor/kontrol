@@ -60,6 +60,6 @@ internal class LoggedContent(
 
 
 internal fun OutgoingContent.WriteChannelContent.toReadChannel(): ByteReadChannel =
-    GlobalScope.writer(Dispatchers.Unconfined) {
+    GlobalScope.writer(Dispatchers.Default) {
         writeTo(channel)
     }.channel
