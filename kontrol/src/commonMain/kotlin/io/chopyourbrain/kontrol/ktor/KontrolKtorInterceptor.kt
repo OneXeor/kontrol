@@ -72,7 +72,7 @@ class KontrolKtorInterceptor(val level: DetailLevel) {
                 else -> null
             }
 
-            content?.observe()
+            content
         } else null
 
         runCatching {
