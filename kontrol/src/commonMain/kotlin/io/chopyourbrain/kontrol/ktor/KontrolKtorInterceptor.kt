@@ -23,8 +23,13 @@ import io.ktor.http.contentType
 import io.ktor.util.AttributeKey
 import io.ktor.util.date.getTimeMillis
 import io.ktor.util.pipeline.PipelineContext
+import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.charsets.Charsets
+import io.ktor.utils.io.core.toByteArray
 import kotlinx.atomicfu.atomic
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class KontrolKtorInterceptor(val level: DetailLevel) {
 
@@ -60,19 +65,17 @@ class KontrolKtorInterceptor(val level: DetailLevel) {
         }
 
         val observedContent = if (level.body) {
+            val channel = ByteChannel()
             val charset = content?.contentType?.charset() ?: Charsets.UTF_8
             val contentType = content?.contentType?.toString()
 
-            entryBody.charset = charset
-            entryBody.contentType = contentType
-            entryBody.bodyChannel = when (content) {
-                is OutgoingContent.ByteArrayContent -> content.bytes()
-                is OutgoingContent.WriteChannelContent -> content.toReadChannel().toByteArray()
-                is OutgoingContent.ReadChannelContent -> content.readFrom().toByteArray()
-                else -> null
+            GlobalScope.launch(Dispatchers.Unconfined) {
+                entryBody.charset = charset
+                entryBody.contentType = contentType
+                entryBody.bodyChannel = channel.tryReadText(charset)?.toByteArray()
             }
 
-            content
+            content?.observe(channel)
         } else null
 
         runCatching {
