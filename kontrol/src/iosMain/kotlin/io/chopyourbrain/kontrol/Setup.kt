@@ -7,3 +7,10 @@ fun kontrolIOSInstall(navigationController: UINavigationController) {
     if (ServiceLocator.DebugScreenPlatformController.value != null) throw IllegalStateException("Double initialization detected")
     ServiceLocator.DebugScreenPlatformController.value = DebugScreenPlatformControllerImpl(navigationController)
 }
+
+/**
+ * For swiftUI
+ */
+fun getKontrolDebugMenuTabViewController(): DebugMenuTabViewController {
+    return DebugMenuTabViewController()
+}

@@ -11,7 +11,7 @@ import platform.Foundation.NSSelectorFromString
 import platform.UIKit.*
 
 @ExportObjCClass
-internal class DebugMenuTabViewController @ObjCObjectBase.OverrideInit constructor(
+class DebugMenuTabViewController @OverrideInit constructor(
     nibName: String? = null,
     bundle: NSBundle? = null
 ) : UITabBarController(nibName, bundle), UITabBarControllerDelegateProtocol {
