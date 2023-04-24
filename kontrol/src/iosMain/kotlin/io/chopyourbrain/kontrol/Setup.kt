@@ -11,6 +11,7 @@ fun kontrolIOSInstall(navigationController: UINavigationController) {
 /**
  * For swiftUI
  */
-fun getKontrolDebugMenuTabViewController(): DebugMenuTabViewController {
+fun getKontrolDebugMenuTabViewController(debugScreen: DebugScreen): DebugMenuTabViewController {
+    ServiceLocator.MainDebugScreen.value = debugScreen
     return DebugMenuTabViewController()
 }
