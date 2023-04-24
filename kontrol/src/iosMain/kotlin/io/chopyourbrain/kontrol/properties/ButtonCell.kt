@@ -24,6 +24,7 @@ internal class ButtonCell : UITableViewCell {
         button.rightAnchor.constraintEqualToAnchor(rightAnchor, -10.0).setActive(true)
         button.layer.cornerRadius = 20.0
         button.clipsToBounds = true
+        button.lineBreakMode = NSLineBreakByWordWrapping
         button.titleLabel?.font = UIFont.boldSystemFontOfSize(17.0)
         button.backgroundColor = UIColor.systemBlueColor
         button.addTarget(this, NSSelectorFromString(::onButtonTapped.name), UIControlEventTouchUpInside)
