@@ -29,6 +29,7 @@ internal class TextFieldCell : UITableViewCell {
         value.bottomAnchor.constraintEqualToAnchor(bottomAnchor).setActive(true)
         value.rightAnchor.constraintEqualToAnchor(rightAnchor, -10.0).setActive(true)
         value.leftAnchor.constraintEqualToAnchor(leftAnchor, 10.0).setActive(true)
+        value.borderStyle = UITextBorderStyle.UITextBorderStyleLine
         value.addTarget(this, NSSelectorFromString(::onTextChanged.name), UIControlEventEditingChanged)
     }
 

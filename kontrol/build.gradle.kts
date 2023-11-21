@@ -5,7 +5,7 @@ plugins {
     id("convention.publication")
 }
 
-version = "0.2.7"
+version = "0.2.8-vc-for-swiftui02"
 group = "io.github.chopyourbrain"
 
 kotlin {
